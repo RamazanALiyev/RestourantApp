@@ -1,31 +1,20 @@
 {
   "productAbout": [
     {
-      "title": "Ramazan",
       "productName": "Corekde Et Doner",
       "productPrice": 12,
       "id": 1
     },
     {
-      "title": "Aliyev",
       "productName": "Corekde Toyuq Doner",
       "productPrice": 10,
       "id": 2
     },
     {
-      "title": "Hesenov",
       "productName": "Lavasda Toyuq Doner",
       "productPrice": 15,
       "id": 3
     }
   ],
-  "rostAbout": [
-    {
-      "table": "M1",
-      "waiter": "Kamil",
-      "status": false,
-      "price": "12 AZN",
-      "date": "25.03.2022 13:43:34"
-    }
-  ]
+  "rostAbout": []
 }

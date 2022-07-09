@@ -1,56 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../../features/productSlice";
-import axios from "axios";
 function Formproduct() {
   const products = useSelector((state) => state.products);
   const dispatch = useDispatch();
-  const [getFormData, setGetFormData] = useState({
-    table: "",
-    waiter: "",
-    status: false,
-    price: "",
-    number: "",
-    date: "",
-  });
-  let calculatePrice = getFormData.number * getFormData.price;
-  console.log(getFormData);
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, []);
   let day = new Date().getDate();
   let month = new Date().getMonth();
   let year = new Date().getFullYear();
   let hours = new Date().getHours();
   let minutes = new Date().getMinutes();
   let seconds = new Date().getSeconds();
-  let nowDate = `${day < 10 ? `0${day}` : day}-${
-    month < 10 ? `0${month}` : month
-  }-${year} ${hours < 10 ? `0${hours}` : hours}:${
-    minutes < 10 ? `0${minutes}` : minutes
-  }:${seconds < 10 ? `0${seconds}` : seconds}`;
-  useEffect(() => {
-    dispatch(fetchProducts());
-  }, []);
+  let nowDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+  const [curPrice, setCurPrice] = useState(0);
+  const [newPrice, setNewPrice] = useState(0);
+  const [getFormData, setGetFormData] = useState({
+    productName: "",
+    number: "1",
+    price: 0,
+    table: "",
+    waiter: "",
+    status: false,
+    date: nowDate,
+  });
+
+  const postMethod = async () => {
+    await fetch("http://localhost:8000/rostAbout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json;charset=utf-8" },
+      body: JSON.stringify(getFormData),
+    })
+      .then((res) => res)
+      .catch((e) => e.message);
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
+    postMethod();
+  };
+  const handleSelectName = (e) => {
+    const dataPrice = products.products.filter(
+      (datPrice) => datPrice.productName === e.target.value
+    );
+    dataPrice.forEach((priceNow) => setCurPrice(priceNow.productPrice));
+    console.log(getFormData);
     setGetFormData((getFormData) => ({
       ...getFormData,
-      date: nowDate,
+      productName: e.target.value,
     }));
-     axios
-      .post("http://localhost:8000/rostAbout", { getFormData })
-      .then((data) => console.log(data))
-      .catch((e) => console.log(e));
+    setNewPrice(curPrice * getFormData.number);
   };
-  const chooseProductName = (e) => {
-    const datar = products.products.filter(
-      (eachProduct) => eachProduct.productName === e.target.value
-    );
-    datar.forEach((element) => {
-      setGetFormData((getFormData) => ({
-        ...getFormData,
-        proName: e.target.value,
-        price: element.productPrice,
-      }));
-    });
+  const handleChooseNumber = (e) => {
+    setGetFormData((getFormData) => ({
+      ...getFormData,
+      number: e.target.value,
+    }));
+    setNewPrice(curPrice * getFormData.number);
   };
   return (
     <>
@@ -72,10 +78,13 @@ function Formproduct() {
           <label className="w-4/5 mt-3" htmlFor="productName">
             <h3 className="mb-1 ml-12">Məhsulun adı</h3>
             <select
-              onChange={chooseProductName}
+              onChange={handleSelectName}
               id="productName"
               className="w-full rounded-xl h-12 text-center ceholder:text-center border border-indigo-500 focus:outline-none focus:ring focus:border-blue-500"
             >
+              <option selected disabled hidden>
+                Secin
+              </option>
               {products.products.map((product, index) => (
                 <option key={index}>{product.productName}</option>
               ))}
@@ -85,14 +94,9 @@ function Formproduct() {
             <label className="w-4/5 mt-3 mr-3" htmlFor="productNum">
               <h3 className="text-center mb-1">Məhsulun Sayı</h3>
               <input
-                onChange={(e) => {
-                  setGetFormData((getFormData) => ({
-                    ...getFormData,
-                    number: e.target.value,
-                  }));
-                }}
+                onChange={handleChooseNumber}
                 required
-                value={getFormData.proNumber}
+                value={getFormData.number}
                 className="rounded-xl h-12 text-center ceholder:text-center border border-indigo-500 focus:outline-none focus:ring focus:border-blue-500"
                 id="productNum"
                 min={1}
@@ -103,7 +107,7 @@ function Formproduct() {
               <h3 className="text-center mb-1">Məhsulun Qiyməti</h3>
               <input
                 required
-                value={`${calculatePrice} AZN`}
+                value={`${newPrice} AZN`}
                 className="rounded-xl h-12 text-center ceholder:text-center border border-indigo-500 focus:outline-none focus:ring focus:border-blue-500"
                 id="productPrice"
                 readOnly

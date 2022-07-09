@@ -5,13 +5,13 @@ import MyLoader from "../Skeleton/MyLoader";
 function Table() {
   const [getData, setGetData] = useState([]);
   const [skeleton, setSkeleton] = useState(true);
+  // console.log(getData);
   useEffect(() => {
     axios.get("http://localhost:8000/rostAbout").then((res) => {
       setGetData(res.data);
       setSkeleton(false);
     });
   }, []);
-  // console.log(getData)
   return (
     <>
       {skeleton ? (
