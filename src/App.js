@@ -69,7 +69,7 @@ function App() {
               : null}
           </div>
         </div>
-        <div className="h-2/4 border-b px-10 py-5">
+        <div className="h-2/4 overflow-y-auto border-b px-10 py-5">
           <Table />
         </div>
       </div>
